@@ -1,0 +1,67 @@
+apply plugin: 'java'
+
+repositories {
+    mavenLocal()
+    jcenter()
+    mavenCentral()
+    maven {
+        url 'http://repo.typesafe.com/typesafe/maven-releases/'
+    }
+}
+
+configurations {
+    runServer
+    runAgent
+    onDeviceComponents
+}
+
+dependencies {
+    runServer 'com.musala.atmosphere:atmosphere-server:+'
+    
+    runAgent 'com.musala.atmosphere:atmosphere-agent:+'
+    
+    onDeviceComponents 'com.musala.atmosphere:atmosphere-ime:+'
+    onDeviceComponents 'com.musala.atmosphere:atmosphere-service:+'
+    onDeviceComponents 'com.musala.atmosphere:atmosphere-uiautomator-bridge:+'
+}
+
+task copyOnDeviceComponents(type: Copy) {
+    into 'onDeviceComponents'
+    from configurations.onDeviceComponents
+    // exclude version
+    rename { fileName -> fileName.replaceAll(/-\d+(\.\d+)+/, '') }
+}
+
+task runAgent(type: JavaExec, dependsOn: copyOnDeviceComponents) {
+    standardInput = System.in
+    main = 'com.musala.atmosphere.agent.Agent'
+    systemProperty 'java.library.path', file('natives')
+    classpath configurations.runAgent
+    
+    // connect to the Server automatically
+    def serverIp = "localhost"
+    if (project.hasProperty("ip")) {
+        serverIp = ip
+    }
+    
+    def serverPort
+    if (project.hasProperty("port")) {
+        serverPort = port
+    } else {
+        Properties props = new Properties()
+        props.load(new FileInputStream("server.properties"))
+        serverPort = props.getProperty("pool.manager.rmi.port")
+    }
+    
+    args "-h", serverIp, "-p", serverPort
+}
+
+task runServer(type: JavaExec) {
+    standardInput = System.in
+    main = 'com.musala.atmosphere.server.Server'
+    classpath configurations.runServer
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.13'
+}
