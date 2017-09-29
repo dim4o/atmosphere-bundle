@@ -50,7 +50,7 @@ task runAgent(type: JavaExec, dependsOn: copyOnDeviceComponents) {
     } else {
         Properties props = new Properties()
         props.load(new FileInputStream("server.properties"))
-        serverPort = props.getProperty("pool.manager.rmi.port")
+        serverPort = props.getProperty("websocket.port")
     }
     
     args "-h", serverIp, "-p", serverPort
