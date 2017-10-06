@@ -7,19 +7,31 @@ repositories {
     maven {
         url 'http://repo.typesafe.com/typesafe/maven-releases/'
     }
+    maven {
+        url 'https://dl.bintray.com/musala/atmosphere'
+    }
+    maven {
+        url 'http://www.terracotta.org/download/reflector/releases/'
+    }
+    maven {
+        url 'http://download.osgeo.org/webdav/geotools/'
+    }
 }
 
 configurations {
     runServer
     runAgent
+    runUiViewer
     onDeviceComponents
 }
 
 dependencies {
     runServer 'com.musala.atmosphere:atmosphere-server:+'
-    
+
     runAgent 'com.musala.atmosphere:atmosphere-agent:+'
-    
+
+    runUiViewer 'com.musala.atmosphere:atmosphere-ui-viewer:+'
+
     onDeviceComponents 'com.musala.atmosphere:atmosphere-ime:+'
     onDeviceComponents 'com.musala.atmosphere:atmosphere-service:+'
     onDeviceComponents 'com.musala.atmosphere:atmosphere-uiautomator-bridge:+'
@@ -60,6 +72,12 @@ task runServer(type: JavaExec) {
     standardInput = System.in
     main = 'com.musala.atmosphere.server.Server'
     classpath configurations.runServer
+}
+
+task runUiViewer(type: JavaExec) {
+    standardInput = System.in
+    main = 'com.android.uiautomator.UiAutomatorViewer'
+    classpath configurations.runUiViewer
 }
 
 task wrapper(type: Wrapper) {
