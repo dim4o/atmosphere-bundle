@@ -1,3 +1,4 @@
+uidump/
 *.log
 *.png
 .gradle/
