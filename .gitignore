@@ -2,3 +2,5 @@ uidump/
 /*.png
 *.log
 .gradle/
+onDeviceComponents/*.apk
+onDeviceComponents/*.jar
